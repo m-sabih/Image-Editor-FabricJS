@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html>
+
+    <head>
+        <meta content="text/html;charset=utf-8" http-equiv="Content-Type">
+        <meta content="utf-8" http-equiv="encoding">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" href="style.css">
+        <script src="fabric.min.js"></script>
+        <script src="jquery.min.js"></script>
+        <script src="filesaver.min.js"></script>
+    </head>
+
+    <body>
+
+    <div class="split left">
+        <div class="centered">      
+            <div id="images">
+                <img src="twitter.png" height="35%" width="35%" style="border: 1px solid black">
+                <img src="twittertemplate.png" height="35%" width="35%" style="border: 1px solid black">
+            </div>
+        </div>
+    </div>
+
+    
+    
+    <div class="split right">
+        <input type="text" id="logo1" value="Name" >
+        <input type="text" id="logo2" value="Username" >
+        <input type="textbox" id="logo3" value="Status" maxlength="270">
+        
+        <div style="float:right">
+            <button id="canvas2png">Save</button>
+        </div>
+
+
+        <canvas id="c" height="490" width="490" hidden></canvas>
+        <div class="c">
+            <img id='img'/>
+        </div>
+
+        <script>
+            var canvas = new fabric.Canvas('c');
+            var scaleFactor = 0.4;
+            var getsource = "java.jpg";
+
+            $("#images img").click(function () {
+                $("#images img").removeClass("selected");
+                $(this).addClass("selected");
+
+                drawMyCanvas();
+            });
+            $("#logo1, #logo2, #logo3").on("input change", function () {
+                //drawMyCanvas();
+                loadText();
+                setPreview();
+            });
+
+
+            $('#loadText').on('click',loadText);
+
+            $("#canvas2png").click(function(){
+                $("#c").get(0).toBlob(function(blob){
+                    saveAs(blob, "myIMG.png");
+                });
+            });
+
+            // functions
+            function drawMyCanvas() {
+                canvas.clear();
+
+                getsource = $($(".selected")[0]).attr("src");
+                
+                fabric.Image.fromURL(getsource, function(oImg) {
+                    oImg.scale(scaleFactor).set({top: 0, left: 0});
+                    oImg.set({
+                            angle: 0,
+                            width: 1500,
+                            height: 1500,
+                    });
+                    var textt3=document.getElementById("logo3").value;
+                    var text = new fabric.Text("Name", {
+                        fontFamily: 'Arial',
+                        fontSize: 25,
+                        left: 15,
+                        textAlign: 'left'
+                    });
+
+                    var text2 = new fabric.Text("Username", {
+                        fontFamily: 'Arial',
+                        fontSize: 16,
+                        left: 25,
+                        textAlign: 'left'
+                    });
+
+                    var text3 = new fabric.Textbox(textt3, {
+                        width: 400,
+                        height: 200,
+                        top: 110,
+                        fontSize: 26,
+                        left: 45,
+                        textAlign: 'left'
+                    });
+                    
+                    fabric.Image.fromURL('java.png', function(img) {
+                        img.set({
+                            angle: 0,
+                            width: 200,
+                            height: 200,
+                            top: 25,
+                            scaleX: 0.3,
+                            scaleY: 0.3,
+                            clipTo: roundedCorners.bind(img)
+                        });
+
+                        var group = new fabric.Group([oImg, text, text2, text3, img], { left: 0, top: 0});
+                        canvas.add(group);
+
+                        // calling loadText here so when input changes, text also gets updated
+                        loadText();
+                        setPreview();
+
+                        console.log(canvas._objects[0]._objects[1].text);
+                        console.log(canvas._objects[0]._objects[2].text);
+                        console.log(canvas._objects[0]._objects[3].text);
+                    
+                    });
+                });
+            }
+
+            function loadText() {
+                var text1  = canvas._objects[0]._objects[1];
+                var text2  = canvas._objects[0]._objects[2];
+                var text3  = canvas._objects[0]._objects[3];
+                var oImg   = canvas._objects[0]._objects[0];
+                var img   = canvas._objects[0]._objects[4];
+
+                var txt1len = document.getElementById("logo1").value.length;
+                var txt2len = document.getElementById("logo2").value.length;
+                var txt3len = document.getElementById("logo3").value.length;
+                console.log("text1len: " + txt3len);
+
+                // text 1 conditions
+                if (txt3len <= 41) {
+                    text1.set("top",oImg.height * scaleFactor-oImg.height * scaleFactor - 120);
+                    text1.set("left",oImg.width * scaleFactor/2- text3.width/2 - 300);
+                    text2.set("top",oImg.height * scaleFactor-oImg.height * scaleFactor - 90);
+                    text2.set("left",oImg.width * scaleFactor/2- text3.width/2 - 300);
+                    text3.set("top",oImg.height * scaleFactor-oImg.height * scaleFactor - 25);
+                    text3.set("left",oImg.width * scaleFactor/2- text3.width/2 - 365);
+                    img.set("top",oImg.height * scaleFactor-oImg.height * scaleFactor - 130);
+                    img.set("left",oImg.width * scaleFactor/2- text3.width/2 - 375);
+                }
+                else if (txt3len <= 78 && txt3len>41) {
+                    text1.set("top",oImg.height * scaleFactor-oImg.height * scaleFactor - 150);
+                    text1.set("left",oImg.width * scaleFactor/2- text3.width/2 - 300);
+                    text2.set("top",oImg.height * scaleFactor-oImg.height * scaleFactor - 120);
+                    text2.set("left",oImg.width * scaleFactor/2- text3.width/2 - 300);
+                    text3.set("top",oImg.height * scaleFactor-oImg.height * scaleFactor - 55);
+                    text3.set("left",oImg.width * scaleFactor/2- text3.width/2 - 365);
+                    img.set("top",oImg.height * scaleFactor-oImg.height * scaleFactor - 160);
+                    img.set("left",oImg.width * scaleFactor/2- text3.width/2 - 375);
+                }
+                else if (txt3len <= 113 && txt3len>78) {
+                    text1.set("top",oImg.height * scaleFactor-oImg.height * scaleFactor - 180);
+                    text1.set("left",oImg.width * scaleFactor/2- text3.width/2 - 300);
+                    text2.set("top",oImg.height * scaleFactor-oImg.height * scaleFactor - 150);
+                    text2.set("left",oImg.width * scaleFactor/2- text3.width/2 - 300);
+                    text3.set("top",oImg.height * scaleFactor-oImg.height * scaleFactor - 90);
+                    text3.set("left",oImg.width * scaleFactor/2- text3.width/2 - 365);
+                    img.set("top",oImg.height * scaleFactor-oImg.height * scaleFactor - 190);
+                    img.set("left",oImg.width * scaleFactor/2- text3.width/2 - 375);
+                }
+                else if (txt3len <= 153 && txt3len>113) {
+                    text1.set("top",oImg.height * scaleFactor-oImg.height * scaleFactor - 220);
+                    text1.set("left",oImg.width * scaleFactor/2- text3.width/2 - 300);
+                    text2.set("top",oImg.height * scaleFactor-oImg.height * scaleFactor - 190);
+                    text2.set("left",oImg.width * scaleFactor/2- text3.width/2 - 300);
+                    text3.set("top",oImg.height * scaleFactor-oImg.height * scaleFactor - 130);
+                    text3.set("left",oImg.width * scaleFactor/2- text3.width/2 - 365);
+                    img.set("top",oImg.height * scaleFactor-oImg.height * scaleFactor - 230);
+                    img.set("left",oImg.width * scaleFactor/2- text3.width/2 - 375);
+                }
+                else{
+                    text1.set("top",oImg.height * scaleFactor-oImg.height * scaleFactor - 250);
+                    text1.set("left",oImg.width * scaleFactor/2- text3.width/2 - 300);
+                    text2.set("top",oImg.height * scaleFactor-oImg.height * scaleFactor - 220);
+                    text2.set("left",oImg.width * scaleFactor/2- text3.width/2 - 300);
+                    text3.set("top",oImg.height * scaleFactor-oImg.height * scaleFactor - 170);
+                    text3.set("left",oImg.width * scaleFactor/2- text3.width/2 - 360);
+                    img.set("top",oImg.height * scaleFactor-oImg.height * scaleFactor - 260);
+                    img.set("left",oImg.width * scaleFactor/2- text3.width/2 - 375);
+                }
+
+                text1.text = $('#logo1').val();
+                text2.text = $('#logo2').val();
+                text3.text = $('#logo3').val();
+                canvas.renderAll();
+            }
+
+            function roundedCorners(ctx) {
+                var rect = new fabric.Rect({
+                    left:0,
+                    top:0,
+                    rx:30 / this.scaleX,
+                    ry:30 / this.scaleY,
+                    width:this.width,
+                    height:this.height,
+                    fill:'#000000'
+                });
+                rect._render(ctx, false);
+            }
+
+            function setPreview(){
+                document.getElementById('img').src =  canvas.toDataURL({
+                      format: 'png',
+                      width: 1000,
+                      height: 1000
+                    });
+            }
+            </script>
+        </div>
+    </div>
+        
+    </body>
+</html> 
